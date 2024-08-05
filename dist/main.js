@@ -24,6 +24,10 @@ const createWindow = () => {
             preload: node_path_1.default.join(__dirname, 'preload.js'),
         },
     });
+    // 開発時にはデベロッパーツールを開く
+    if (process.env.NODE_ENV === 'development') {
+        mainWindow.webContents.openDevTools({ mode: 'detach' });
+    }
     // レンダラープロセスをロード
     mainWindow.loadFile('dist/index.html');
 };

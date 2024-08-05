@@ -25,6 +25,11 @@ const createWindow = () =>  {
     },
   });
 
+    // 開発時にはデベロッパーツールを開く
+    if (process.env.NODE_ENV === 'development') {
+      mainWindow.webContents.openDevTools({ mode: 'detach' });
+    }
+
   // レンダラープロセスをロード
   mainWindow.loadFile('dist/index.html');
 };
