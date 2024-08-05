@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_path_1 = __importDefault(require("node:path"));
 const electron_1 = require("electron");
+const read_1 = require("./modules/load_log/read");
 // 開発時には electron アプリをホットリロードする
 if (process.env.NODE_ENV === "development") {
     require("electron-reload")(__dirname, {
@@ -33,6 +34,16 @@ const createWindow = () => {
 };
 electron_1.app.whenReady().then(() => {
     createWindow();
+    (async () => {
+        const filePath = 'log/866eaa97-a2cd-47e2-a923-703665370808/RunningLog.json'; // 読み取りたいファイルのパスを指定してください
+        try {
+            const fileContent = await (0, read_1.readFileWithBOM)(filePath);
+            console.log('File Content:', fileContent);
+        }
+        catch (error) {
+            console.error('Error reading file:', error);
+        }
+    })();
 });
 // すべてのウィンドウが閉じられたらアプリを終了する
 electron_1.app.once('window-all-closed', () => electron_1.app.quit());

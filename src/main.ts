@@ -1,6 +1,8 @@
 import path from 'node:path';
 import { BrowserWindow, app } from 'electron';
 
+import  { readFileWithBOM } from './modules/load_log/read'
+
 // 開発時には electron アプリをホットリロードする
 if (process.env.NODE_ENV === "development") {
   require("electron-reload")(__dirname, {
@@ -36,6 +38,17 @@ const createWindow = () =>  {
 
 app.whenReady().then(() => {
   createWindow();
+
+  (async () => {
+    const filePath = 'log/866eaa97-a2cd-47e2-a923-703665370808/RunningLog.json'; // 読み取りたいファイルのパスを指定してください
+    try {
+      const fileContent = await readFileWithBOM(filePath);
+      console.log('File Content:', fileContent);
+    } catch (error) {
+      console.error('Error reading file:', error);
+    }
+  })();
+
 });
 
 // すべてのウィンドウが閉じられたらアプリを終了する
