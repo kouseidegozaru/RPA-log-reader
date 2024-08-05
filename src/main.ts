@@ -15,17 +15,22 @@ if (process.env.NODE_ENV === "development") {
   });
 }
 
-app.whenReady().then(() => {
+const createWindow = () =>  {
   // アプリの起動イベント発火で BrowserWindow インスタンスを作成
   const mainWindow = new BrowserWindow({
     webPreferences: {
-      // tsc or webpack が出力したプリロードスクリプトを読み込み
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
 
   // レンダラープロセスをロード
   mainWindow.loadFile('dist/index.html');
+};
+
+app.whenReady().then(() => {
+  createWindow();
 });
 
 // すべてのウィンドウが閉じられたらアプリを終了する

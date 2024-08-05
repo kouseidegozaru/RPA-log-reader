@@ -15,16 +15,20 @@ if (process.env.NODE_ENV === "development") {
         hardResetMethod: "exit",
     });
 }
-electron_1.app.whenReady().then(() => {
+const createWindow = () => {
     // アプリの起動イベント発火で BrowserWindow インスタンスを作成
     const mainWindow = new electron_1.BrowserWindow({
         webPreferences: {
-            // tsc or webpack が出力したプリロードスクリプトを読み込み
+            nodeIntegration: false,
+            contextIsolation: true,
             preload: node_path_1.default.join(__dirname, 'preload.js'),
         },
     });
     // レンダラープロセスをロード
     mainWindow.loadFile('dist/index.html');
+};
+electron_1.app.whenReady().then(() => {
+    createWindow();
 });
 // すべてのウィンドウが閉じられたらアプリを終了する
 electron_1.app.once('window-all-closed', () => electron_1.app.quit());
