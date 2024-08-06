@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { BrowserWindow, app } from 'electron';
-import { readJsonFile } from './modules/load_log/read';
+import { readAllLogFiles } from './modules/load_log/read_log_files';
 
 // 開発時には electron アプリをホットリロードする
 if (process.env.NODE_ENV === "development") {
@@ -39,10 +39,14 @@ const createWindow = () => {
 };
 
 const tests = async () => {
-  const filePath = 'log/d1b77bb6-dcd8-4edd-9305-7611a76f9a81/ExceptionLog.json'; // 読み取りたいファイルのパスを指定してください
+  const fileDir = 'log'; // 読み取りたいファイルのパスを指定してください
   try {
-    const jsonFileContent = await readJsonFile(filePath);
-    console.log('File Content:', jsonFileContent);
+    const logData = await readAllLogFiles(fileDir);
+    for (const log of logData) {
+      console.log('File', (await log).fileType);
+      console.log('JSON Data:', (await log).content);
+      console.log('----------------------------------');
+    }
   } catch (error) {
     console.error('Error reading file:', error);
   }
