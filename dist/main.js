@@ -36,10 +36,9 @@ const createWindow = () => {
     mainWindow.loadFile('dist/index.html');
 };
 const tests = async () => {
-    const filePath = 'log/866eaa97-a2cd-47e2-a923-703665370808/RunningLog.json'; // 読み取りたいファイルのパスを指定してください
+    const filePath = 'log/d1b77bb6-dcd8-4edd-9305-7611a76f9a81/ExceptionLog.json'; // 読み取りたいファイルのパスを指定してください
     try {
-        const fileContent = await (0, read_1.readFileWithBOM)(filePath);
-        const jsonFileContent = (0, read_1.convertToStandardJSON)(fileContent);
+        const jsonFileContent = await (0, read_1.readJsonFile)(filePath);
         console.log('File Content:', jsonFileContent);
     }
     catch (error) {
