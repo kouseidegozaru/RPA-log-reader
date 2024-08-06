@@ -1,4 +1,6 @@
 import fs from 'fs/promises';
+import { JSONData } from './types';
+
 
 // BOM付きファイルの読み取り
 export async function readFileWithBOM(filePath: string): Promise<string> {
