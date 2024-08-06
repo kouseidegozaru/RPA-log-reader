@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_path_1 = __importDefault(require("node:path"));
 const electron_1 = require("electron");
-const read_json_file_1 = require("./modules/load_log/read_json_file");
 const read_log_files_1 = require("./modules/load_log/read_log_files");
 // 開発時には electron アプリをホットリロードする
 if (process.env.NODE_ENV === "development") {
@@ -39,12 +38,10 @@ const createWindow = () => {
 const tests = async () => {
     const fileDir = 'log'; // 読み取りたいファイルのパスを指定してください
     try {
-        const filepaths = await (0, read_log_files_1.getFilePaths)(fileDir);
-        for (const filePath of filepaths) {
-            const jsonContent = await (0, read_json_file_1.readJsonFile)(filePath);
-            const jsonData = (0, read_log_files_1.convertToJSONData)(jsonContent);
-            console.log('File', (await jsonData).fileType);
-            console.log('JSON Data:', (await jsonData).content);
+        const logData = await (0, read_log_files_1.readAllLogFiles)(fileDir);
+        for (const log of logData) {
+            console.log('File', (await log).fileType);
+            console.log('JSON Data:', (await log).content);
             console.log('----------------------------------');
         }
     }

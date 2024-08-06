@@ -1,9 +1,10 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { RunningLog, ExceptionLog, JSONData } from './types';
+import { readJsonFile } from './read_json_file';
 
 // ディレクトリパスからその下の全てのファイルパスの取得
-export async function getFilePaths(dirPath: string): Promise<string[]> {
+async function getFilePaths(dirPath: string): Promise<string[]> {
     let filePaths: string[] = [];
 
     // ディレクトリ内のアイテムを読み取る
@@ -38,8 +39,7 @@ function isExceptionLog(data: any): data is ExceptionLog {
 }
 
 // JSONデータを適切な型に変換する関数
-export async function convertToJSONData(jsonFileContent: JSON): Promise<{ fileType: string; content: JSONData }> {
-
+async function convertToJSONData(jsonFileContent: any): Promise<{ fileType: string; content: JSONData }> {
     if (isRunningLog(jsonFileContent)) {
         return { fileType: 'RunningLog', content: jsonFileContent };
     } else if (isExceptionLog(jsonFileContent)) {
@@ -47,4 +47,24 @@ export async function convertToJSONData(jsonFileContent: JSON): Promise<{ fileTy
     } else {
         throw new Error('Unsupported JSON format');
     }
+}
+
+// すべてのログファイルを読み取る関数
+export async function readAllLogFiles(dirPath: string): Promise<{ fileType: string; content: JSONData }[]> {
+    const logData: { fileType: string; content: JSONData }[] = [];
+    try {
+        const filepaths = await getFilePaths(dirPath);
+        for (const filePath of filepaths) {
+            try {
+                const jsonContent = await readJsonFile(filePath);
+                const jsonData = await convertToJSONData(jsonContent);
+                logData.push({ fileType: jsonData.fileType, content: jsonData.content });
+            } catch (error) {
+                console.error(`Error converting file ${filePath}:`, error);
+            }
+        }
+    } catch (error) {
+        console.error('Error reading log files:', error);
+    }
+    return logData;
 }

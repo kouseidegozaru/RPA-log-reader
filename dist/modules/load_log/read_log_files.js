@@ -3,10 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFilePaths = getFilePaths;
-exports.convertToJSONData = convertToJSONData;
+exports.readAllLogFiles = readAllLogFiles;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const read_json_file_1 = require("./read_json_file");
 // ディレクトリパスからその下の全てのファイルパスの取得
 async function getFilePaths(dirPath) {
     let filePaths = [];
@@ -48,4 +48,25 @@ async function convertToJSONData(jsonFileContent) {
     else {
         throw new Error('Unsupported JSON format');
     }
+}
+// すべてのログファイルを読み取る関数
+async function readAllLogFiles(dirPath) {
+    const logData = [];
+    try {
+        const filepaths = await getFilePaths(dirPath);
+        for (const filePath of filepaths) {
+            try {
+                const jsonContent = await (0, read_json_file_1.readJsonFile)(filePath);
+                const jsonData = await convertToJSONData(jsonContent);
+                logData.push({ fileType: jsonData.fileType, content: jsonData.content });
+            }
+            catch (error) {
+                console.error(`Error converting file ${filePath}:`, error);
+            }
+        }
+    }
+    catch (error) {
+        console.error('Error reading log files:', error);
+    }
+    return logData;
 }
