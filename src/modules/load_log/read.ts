@@ -11,5 +11,16 @@ export async function readFileWithBOM(filePath: string): Promise<string> {
     return data;
   }
 
-module.exports = { readFileWithBOM };
+// 独自フォーマットを標準JSONに変換する関数
+export function convertToStandardJSON(data: string): JSON {
+  return JSON.parse(data
+    .replace(/</g, '{')
+    .replace(/>/g, '}')
+    .replace(/~"/g, '":')
+    .replace(/~\{/g, ': {')
+    .replace(/"\~/g, '": ')
+    .replace(/::/g, ':'));
+}
+
+module.exports = { readFileWithBOM ,convertToStandardJSON};
   

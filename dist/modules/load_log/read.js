@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.readFileWithBOM = readFileWithBOM;
+exports.convertToStandardJSON = convertToStandardJSON;
 const promises_1 = __importDefault(require("fs/promises"));
 // BOM付きファイルの読み取り
 async function readFileWithBOM(filePath) {
@@ -15,4 +16,14 @@ async function readFileWithBOM(filePath) {
     }
     return data;
 }
-module.exports = { readFileWithBOM };
+// 独自フォーマットを標準JSONに変換する関数
+function convertToStandardJSON(data) {
+    return JSON.parse(data
+        .replace(/</g, '{')
+        .replace(/>/g, '}')
+        .replace(/~"/g, '":')
+        .replace(/~\{/g, ': {')
+        .replace(/"\~/g, '": ')
+        .replace(/::/g, ':'));
+}
+module.exports = { readFileWithBOM, convertToStandardJSON };

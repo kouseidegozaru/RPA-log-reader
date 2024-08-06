@@ -19,6 +19,9 @@ if (process.env.NODE_ENV === "development") {
 const createWindow = () => {
     // アプリの起動イベント発火で BrowserWindow インスタンスを作成
     const mainWindow = new electron_1.BrowserWindow({
+        width: 800,
+        height: 600,
+        title: 'RPAログ解析',
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -32,18 +35,20 @@ const createWindow = () => {
     // レンダラープロセスをロード
     mainWindow.loadFile('dist/index.html');
 };
+const tests = async () => {
+    const filePath = 'log/866eaa97-a2cd-47e2-a923-703665370808/RunningLog.json'; // 読み取りたいファイルのパスを指定してください
+    try {
+        const fileContent = await (0, read_1.readFileWithBOM)(filePath);
+        const jsonFileContent = (0, read_1.convertToStandardJSON)(fileContent);
+        console.log('File Content:', jsonFileContent);
+    }
+    catch (error) {
+        console.error('Error reading file:', error);
+    }
+};
 electron_1.app.whenReady().then(() => {
     createWindow();
-    (async () => {
-        const filePath = 'log/866eaa97-a2cd-47e2-a923-703665370808/RunningLog.json'; // 読み取りたいファイルのパスを指定してください
-        try {
-            const fileContent = await (0, read_1.readFileWithBOM)(filePath);
-            console.log('File Content:', fileContent);
-        }
-        catch (error) {
-            console.error('Error reading file:', error);
-        }
-    })();
+    tests();
 });
 // すべてのウィンドウが閉じられたらアプリを終了する
 electron_1.app.once('window-all-closed', () => electron_1.app.quit());
