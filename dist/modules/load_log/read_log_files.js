@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getFilePaths = getFilePaths;
+exports.convertToJSONData = convertToJSONData;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 // ディレクトリパスからその下の全てのファイルパスの取得
@@ -25,4 +26,26 @@ async function getFilePaths(dirPath) {
         }
     }
     return filePaths;
+}
+// RunningLog 型のデータかどうかをチェックする型ガード関数
+function isRunningLog(data) {
+    return data && typeof data.TID === 'string' && typeof data.IID === 'number' &&
+        data.CT !== undefined && typeof data.CT.ScenarioPath === 'string';
+}
+// ExceptionLog 型のデータかどうかをチェックする型ガード関数
+function isExceptionLog(data) {
+    return data && typeof data.TID === 'string' && typeof data.IID === 'number' &&
+        data.CT !== undefined && data.CT.OccuredTime !== undefined;
+}
+// JSONデータを適切な型に変換する関数
+async function convertToJSONData(jsonFileContent) {
+    if (isRunningLog(jsonFileContent)) {
+        return { fileType: 'RunningLog', content: jsonFileContent };
+    }
+    else if (isExceptionLog(jsonFileContent)) {
+        return { fileType: 'ExceptionLog', content: jsonFileContent };
+    }
+    else {
+        throw new Error('Unsupported JSON format');
+    }
 }
