@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_path_1 = __importDefault(require("node:path"));
 const electron_1 = require("electron");
+const read_1 = require("./modules/load_log/read");
 // 開発時には electron アプリをホットリロードする
 if (process.env.NODE_ENV === "development") {
     require("electron-reload")(__dirname, {
@@ -18,6 +19,9 @@ if (process.env.NODE_ENV === "development") {
 const createWindow = () => {
     // アプリの起動イベント発火で BrowserWindow インスタンスを作成
     const mainWindow = new electron_1.BrowserWindow({
+        width: 800,
+        height: 600,
+        title: 'RPAログ解析',
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -31,8 +35,19 @@ const createWindow = () => {
     // レンダラープロセスをロード
     mainWindow.loadFile('dist/index.html');
 };
+const tests = async () => {
+    const filePath = 'log/d1b77bb6-dcd8-4edd-9305-7611a76f9a81/ExceptionLog.json'; // 読み取りたいファイルのパスを指定してください
+    try {
+        const jsonFileContent = await (0, read_1.readJsonFile)(filePath);
+        console.log('File Content:', jsonFileContent);
+    }
+    catch (error) {
+        console.error('Error reading file:', error);
+    }
+};
 electron_1.app.whenReady().then(() => {
     createWindow();
+    tests();
 });
 // すべてのウィンドウが閉じられたらアプリを終了する
 electron_1.app.once('window-all-closed', () => electron_1.app.quit());
