@@ -29,6 +29,7 @@ export interface RunningLog {
       UserName: string;
       MachineName: string;
     };
+    error: ExceptionLog | null;
   }
   
   // ExceptionLog.json のデータ型
@@ -49,7 +50,4 @@ export interface RunningLog {
       ErrorDescription: string;
     };
   }
-  
-  // JSONファイルのデータを統一するための型
-  export type JSONData = RunningLog | ExceptionLog;
   

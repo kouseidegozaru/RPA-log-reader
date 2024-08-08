@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { RunningLog, ExceptionLog, JSONData } from './types';
+import { RunningLog, ExceptionLog, JSONData } from './log_types';
 import { readJsonFile } from './read_json_file';
 
 // ディレクトリパスからその下の全てのファイルパスの取得
