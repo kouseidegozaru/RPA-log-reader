@@ -15,17 +15,27 @@ async function getFilePaths(dirPath) {
     // 各アイテムについて処理
     for (const item of items) {
         const fullPath = path_1.default.join(dirPath, item.name);
-        if (item.isDirectory()) {
-            // ディレクトリの場合は再帰的に処理
-            const subDirFilePaths = await getFilePaths(fullPath);
-            filePaths = filePaths.concat(subDirFilePaths);
-        }
-        else if (item.isFile()) {
+        if (item.isFile()) {
             // ファイルの場合はパスを追加
             filePaths.push(fullPath);
         }
     }
     return filePaths;
+}
+// ディレクトリパスからその下の全てのファイルパスの取得
+async function getFileDirs(dirPath) {
+    let fileDirs = [];
+    // ディレクトリ内のアイテムを読み取る
+    const items = await promises_1.default.readdir(dirPath, { withFileTypes: true });
+    // 各アイテムについて処理
+    for (const item of items) {
+        const fullPath = path_1.default.join(dirPath, item.name);
+        if (item.isDirectory()) {
+            // ディレクトリの場合
+            fileDirs.push(fullPath);
+        }
+    }
+    return fileDirs;
 }
 // RunningLog 型のデータかどうかをチェックする型ガード関数
 function isRunningLog(data) {
@@ -37,36 +47,29 @@ function isExceptionLog(data) {
     return data && typeof data.TID === 'string' && typeof data.IID === 'number' &&
         data.CT !== undefined && data.CT.OccuredTime !== undefined;
 }
-// JSONデータを適切な型に変換する関数
-async function convertToJSONData(jsonFileContent) {
-    if (isRunningLog(jsonFileContent)) {
-        return { fileType: 'RunningLog', content: jsonFileContent };
-    }
-    else if (isExceptionLog(jsonFileContent)) {
-        return { fileType: 'ExceptionLog', content: jsonFileContent };
-    }
-    else {
-        throw new Error('Unsupported JSON format');
-    }
-}
 // すべてのログファイルを読み取る関数
 async function readAllLogFiles(dirPath) {
     const logData = [];
-    try {
-        const filepaths = await getFilePaths(dirPath);
-        for (const filePath of filepaths) {
-            try {
-                const jsonContent = await (0, read_json_file_1.readJsonFile)(filePath);
-                const jsonData = await convertToJSONData(jsonContent);
-                logData.push({ fileType: jsonData.fileType, content: jsonData.content });
+    const fileDirs = await getFileDirs(dirPath);
+    for (const fileDir of fileDirs) {
+        const filePaths = await getFilePaths(fileDir);
+        let runningLogContent;
+        let exceptionLogContent;
+        for (const filePath of filePaths) {
+            const jsonContent = await (0, read_json_file_1.readJsonFile)(filePath);
+            if (isRunningLog(jsonContent)) {
+                runningLogContent = jsonContent;
             }
-            catch (error) {
-                console.error(`Error converting file ${filePath}:`, error);
+            else if (isExceptionLog(jsonContent)) {
+                exceptionLogContent = jsonContent;
             }
         }
-    }
-    catch (error) {
-        console.error('Error reading log files:', error);
+        if (runningLogContent) {
+            if (exceptionLogContent) {
+                runningLogContent.error = exceptionLogContent;
+            }
+            logData.push(runningLogContent);
+        }
     }
     return logData;
 }
