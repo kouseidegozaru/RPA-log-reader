@@ -43,7 +43,7 @@ const tests = async () => {
   try {
     const logData = await readAllLogFiles(fileDir);
     for (const log of logData) {
-      console.log(await log);
+      console.log(JSON.stringify(await log, null, 2));
       console.log('----------------------------------');
     }
   } catch (error) {

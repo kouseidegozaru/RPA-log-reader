@@ -11,18 +11,22 @@ export interface RunningLog {
       EndTime: {
         TID: string;
         CT: {
-          Binary: string;
-          IID: number;
-          CT: string;
+          Binary: {
+            TID: string;
+            IID: number;
+            CT: string;
+          };
         };
       };
       ScenarioHash: string;
       BeginTime: {
         TID: string;
         CT: {
-          Binary: string;
-          IID: number;
-          CT: string;
+          Binary: {
+            TID: string;
+            IID: number;
+            CT: string;
+          };
         };
       };
       Version: string;
@@ -40,9 +44,11 @@ export interface RunningLog {
       OccuredTime: {
         TID: string;
         CT: {
-          Binary: string;
-          IID: number;
-          CT: string;
+          Binary: {
+            TID: string;
+            IID: number;
+            CT: string;
+          };
         };
       };
       Line: number;
